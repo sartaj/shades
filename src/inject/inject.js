@@ -1,28 +1,47 @@
-chrome.extension.sendMessage({}, function(response) {
+function toggleElementClassWithTransition({ toggle, domElement, classNameToApply, transitionStringToApply, delay }) {
+  if (domElement.style.transition === transitionStringToApply) domElement.style.transition = '';
+  const savedPreviousTransition = domElement.style.transition
 
-	const bodyClassName = '__extension__browser-shades'
+  domElement.style.transition = transitionStringToApply
 
-	function addStyles() {
-		document.body.classList.add(bodyClassName);
-	}
+  if (toggle) domElement.classList.add(classNameToApply)
+  else domElement.classList.remove(classNameToApply)
 
-	function removeStyles() {
-		document.body.classList.remove(bodyClassName);		
-	}
+  setTimeout(() => {
+    domElement.style.transition = savedPreviousTransition
+  }, delay)
+}
 
-	function toggleStyle(toggle) {
-		if (toggle) addStyles();
-		else removeStyles();
-	}
-		
-	chrome.storage.local.get('toggle', function(data) {
-		toggleStyle(data.toggle)
-	})
-	
-	chrome.storage.onChanged.addListener(function(changes, areaName){
-		if(areaName == "local" && changes.toggle) {
-			toggleStyle(changes.toggle.newValue)
-		}
-	})
+function mount({ DOM_ELEMENT, CLASS_NAME, TRANSITION, DELAY }) {
+  chrome.extension.sendMessage({}, response => {
+    chrome.storage.local.get('toggle', data => {
+      if(!data.toggle) return
+      toggleElementClassWithTransition({
+        toggle: data.toggle,
+        domElement: DOM_ELEMENT,
+        classNameToApply: CLASS_NAME,
+        transitionStringToApply: TRANSITION,
+        delay: DELAY
+      })
+    })
 
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName == "local" && changes.toggle) {
+        toggleElementClassWithTransition({
+          toggle: changes.toggle.newValue,
+          domElement: DOM_ELEMENT,
+          classNameToApply: CLASS_NAME,
+          transitionStringToApply: TRANSITION,
+          delay: DELAY
+        })
+      }
+    })
+  })
+}
+
+mount({
+  DOM_ELEMENT: document.body,
+  CLASS_NAME: '__chrome-extension-shades__',
+  TRANSITION: 'filter 0.2s ease',
+  DELAY: 400
 })

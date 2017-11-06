@@ -1,4 +1,4 @@
-body.__extension__browser-shades {
+body.__chrome-extension-shades__ {
     filter: invert(70%) contrast(120%) sepia(100%) brightness(0.6);!important;
     background: #333!important;
 }
