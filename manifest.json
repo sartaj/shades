@@ -16,7 +16,8 @@
     "activeTab",
     "storage",
     "tabs",
-    "*://*/*"
+    "*://*/*",
+    "contextMenus"
   ],
   "background": {
     "scripts": ["src/background.js"],

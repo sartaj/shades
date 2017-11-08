@@ -14,6 +14,7 @@ function toggleElementClassWithTransition({ toggle, domElement, classNameToApply
 
 function mount({ DOM_ELEMENT, CLASS_NAME, TRANSITION, DELAY }) {
   chrome.extension.sendMessage({}, response => {
+    console.log('message received')
     chrome.storage.local.get('toggle', data => {
       if(!data.toggle) return
       toggleElementClassWithTransition({
